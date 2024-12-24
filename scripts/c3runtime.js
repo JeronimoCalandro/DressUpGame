@@ -1203,6 +1203,21 @@ const C3=self.C3;C3.JobSchedulerRuntime=class extends C3.DefendedBase{constructo
 // scripts/shaders.js
 {
 self["C3_Shaders"] = {};
+self["C3_Shaders"]["skymen_BetterOutline"] = {
+	glsl: "uniform lowp vec3 outlinecolor;\nuniform lowp float width;\nuniform lowp float precisionStep;\nuniform lowp float samples;\nvarying mediump vec2 vTex;\nuniform lowp sampler2D samplerFront;\nuniform mediump vec2 srcStart;\nuniform mediump vec2 srcEnd;\nuniform mediump vec2 srcOriginStart;\nuniform mediump vec2 srcOriginEnd;\nuniform mediump vec2 layoutStart;\nuniform mediump vec2 layoutEnd;\nuniform lowp sampler2D samplerBack;\nuniform mediump vec2 destStart;\nuniform mediump vec2 destEnd;\nuniform mediump float seconds;\nuniform mediump vec2 pixelSize;\nuniform mediump float layerScale;\nuniform mediump float layerAngle;\n#define PI 3.14159265359\n#define SAMPLES 96\n#define PASSES 64\nvoid main(void)\n{\nmediump float outlineAlpha = 0.0;\nmediump vec2 actualWidth;\nmediump float widthCopy = width;\nmediump vec4 color = vec4(outlinecolor.x, outlinecolor.y, outlinecolor.z, 1.0);\nmediump float angle;\nmediump vec2 layoutSize = abs(vec2(layoutEnd.x-layoutStart.x,(layoutEnd.y-layoutStart.y)));\nmediump vec2 texelSize = abs(srcOriginEnd-srcOriginStart)/layoutSize;\nmediump vec4 fragColor;\nmediump vec2 testPoint;\nmediump float sampledAlpha;\nint passes = int(clamp(width / precisionStep, 1.0, float(PASSES)));\nfor (int j=0; j<PASSES; j++) {\nif (j >= passes ) break;\nwidthCopy = mix(0.0, width, float(j)/float(passes));\nactualWidth = widthCopy * texelSize;\nangle = 0.0;\nfor( int i=0; i<SAMPLES; i++ ){\nif (i >= int(samples)) break;\nangle += 1.0/(clamp(samples, 0.0, float(SAMPLES))/2.0) * PI;\ntestPoint = vTex + actualWidth * vec2(cos(angle), sin(angle));\nsampledAlpha = texture2D( samplerFront,  testPoint ).a;\noutlineAlpha = max( outlineAlpha, sampledAlpha );\n}\n}\nfragColor = mix( vec4(0.0), color, outlineAlpha );\nmediump vec4 tex0 = texture2D( samplerFront, vTex );\ngl_FragColor = mix(fragColor, tex0, tex0.a);\n}",
+	glslWebGL2: "#version 300 es\nin mediump vec2 vTex;\nout lowp vec4 outColor;\n#ifdef GL_FRAGMENT_PRECISION_HIGH\n#define highmedp highp\n#else\n#define highmedp mediump\n#endif\nprecision lowp float;\nuniform lowp sampler2D samplerFront;\nuniform mediump vec2 srcStart;\nuniform mediump vec2 srcEnd;\nuniform mediump vec2 srcOriginStart;\nuniform mediump vec2 srcOriginEnd;\nuniform mediump vec2 layoutStart;\nuniform mediump vec2 layoutEnd;\nuniform lowp sampler2D samplerBack;\nuniform lowp sampler2D samplerDepth;\nuniform mediump vec2 destStart;\nuniform mediump vec2 destEnd;\nuniform highmedp float seconds;\nuniform mediump vec2 pixelSize;\nuniform mediump float layerScale;\nuniform mediump float layerAngle;\nuniform mediump float devicePixelRatio;\nuniform mediump float zNear;\nuniform mediump float zFar;\nuniform lowp vec3 outlinecolor;\nuniform lowp float width;\nuniform lowp float precisionStep;\nuniform lowp float samples;\n#define PI 3.14159265359\n#define SAMPLES 96\n#define PASSES 64\nvoid main(void)\n{\nmediump float outlineAlpha = 0.0;\nmediump vec2 actualWidth;\nmediump float widthCopy = width;\nmediump vec4 color = vec4(outlinecolor.x, outlinecolor.y, outlinecolor.z, 1.0);\nmediump float angle;\nmediump vec2 layoutSize = abs(vec2(layoutEnd.x-layoutStart.x,(layoutEnd.y-layoutStart.y)));\nmediump vec2 texelSize = abs(srcOriginEnd-srcOriginStart)/layoutSize;\nmediump vec4 fragColor;\nmediump vec2 testPoint;\nmediump float sampledAlpha;\nint passes = int(clamp(width / precisionStep, 1.0, float(PASSES)));\nint sampleCount = int(clamp(samples, 0.0, float(SAMPLES)));\nfor (int j = 0; j <= passes; j++) {\nwidthCopy = mix(0.0, width, float(j)/float(passes));\nactualWidth = widthCopy * texelSize;\nangle = 0.0;\nfor( int i = 0; i < sampleCount; i++ ) {\nangle += 1.0/(float(sampleCount)/2.0) * PI;\ntestPoint = vTex + actualWidth * vec2(cos(angle), sin(angle));\nsampledAlpha = texture( samplerFront,  testPoint ).a;\noutlineAlpha = max( outlineAlpha, sampledAlpha );\n}\n}\nfragColor = mix( vec4(0.0), color, outlineAlpha );\nmediump vec4 tex0 = texture( samplerFront, vTex );\noutColor = mix(fragColor, tex0, tex0.a);\n}",
+	wgsl: "%%FRAGMENTINPUT_STRUCT%%\n/* input struct contains the following fields:\nfragUV : vec2<f32>\nfragPos : vec4<f32>\nfn c3_getBackUV(fragPos : vec2<f32>, texBack : texture_2d<f32>) -> vec2<f32>\nfn c3_getDepthUV(fragPos : vec2<f32>, texDepth : texture_depth_2d) -> vec2<f32>\n*/\n%%FRAGMENTOUTPUT_STRUCT%%\n%%SAMPLERFRONT_BINDING%% var samplerFront : sampler;\n%%TEXTUREFRONT_BINDING%% var textureFront : texture_2d<f32>;\nstruct ShaderParams {\noutlinecolor : vec3<f32>,\nwidth : f32,\nprecisionStep : f32,\nsamples : f32\n};\n%%SHADERPARAMS_BINDING%% var<uniform> shaderParams : ShaderParams;\n%%C3PARAMS_STRUCT%%\n/* c3Params struct contains the following fields:\nsrcStart : vec2<f32>,\nsrcEnd : vec2<f32>,\nsrcOriginStart : vec2<f32>,\nsrcOriginEnd : vec2<f32>,\nlayoutStart : vec2<f32>,\nlayoutEnd : vec2<f32>,\ndestStart : vec2<f32>,\ndestEnd : vec2<f32>,\ndevicePixelRatio : f32,\nlayerScale : f32,\nlayerAngle : f32,\nseconds : f32,\nzNear : f32,\nzFar : f32,\nisSrcTexRotated : u32\nfn c3_srcToNorm(p : vec2<f32>) -> vec2<f32>\nfn c3_normToSrc(p : vec2<f32>) -> vec2<f32>\nfn c3_srcOriginToNorm(p : vec2<f32>) -> vec2<f32>\nfn c3_normToSrcOrigin(p : vec2<f32>) -> vec2<f32>\nfn c3_clampToSrc(p : vec2<f32>) -> vec2<f32>\nfn c3_clampToSrcOrigin(p : vec2<f32>) -> vec2<f32>\nfn c3_getLayoutPos(p : vec2<f32>) -> vec2<f32>\nfn c3_srcToDest(p : vec2<f32>) -> vec2<f32>\nfn c3_clampToDest(p : vec2<f32>) -> vec2<f32>\nfn c3_linearizeDepth(depthSample : f32) -> f32\n*/\n/*\nfn c3_premultiply(c : vec4<f32>) -> vec4<f32>\nfn c3_unpremultiply(c : vec4<f32>) -> vec4<f32>\nfn c3_grayscale(rgb : vec3<f32>) -> f32\nfn c3_getPixelSize(t : texture_2d<f32>) -> vec2<f32>\nfn c3_RGBtoHSL(color : vec3<f32>) -> vec3<f32>\nfn c3_HSLtoRGB(hsl : vec3<f32>) -> vec3<f32>\n*/\nconst PI:f32 = 3.14159265359;\nconst SAMPLES:i32 = 96;\nconst PASSES:i32 = 64;\n@fragment\nfn main(input : FragmentInput) -> FragmentOutput\n{\nvar outlineAlpha: f32 = 0.0;\nvar actualWidth: vec2<f32>;\nvar widthCopy: f32 = shaderParams.width;\nvar color: vec4<f32> = vec4<f32>(shaderParams.outlinecolor.x, shaderParams.outlinecolor.y, shaderParams.outlinecolor.z, 1.0);\nvar angle: f32;\nlet layoutSize: vec2<f32> = abs(vec2<f32>(c3Params.layoutEnd.x - c3Params.layoutStart.x, c3Params.layoutEnd.y - c3Params.layoutStart.y));\nlet texelSize: vec2<f32> = abs(c3Params.srcOriginEnd - c3Params.srcOriginStart) / layoutSize;\nvar fragColor: vec4<f32>;\nvar testPoint: vec2<f32>;\nvar sampledAlpha: f32;\nlet passes: u32 = u32(clamp(shaderParams.width / shaderParams.precisionStep, 1.0, f32(SAMPLES)));\nlet sampleCount: u32 = u32(clamp(shaderParams.samples, 0.0, f32(SAMPLES)));\nfor (var j: u32 = 0u; j <= passes; j = j + 1u) {\nwidthCopy = mix(0.0, shaderParams.width, f32(j) / f32(passes));\nactualWidth = widthCopy * texelSize;\nangle = 0.0;\nfor (var i: u32 = 0u; i < sampleCount; i = i + 1u) {\nangle = angle + 1.0 / (f32(sampleCount) / 2.0) * PI;\ntestPoint = input.fragUV + actualWidth * vec2<f32>(cos(angle), sin(angle));\nsampledAlpha = textureSample(textureFront, samplerFront, testPoint).a; // Assuming 'samplerFrontSampler' is the sampler associated with 'samplerFront'\noutlineAlpha = max(outlineAlpha, sampledAlpha);\n}\n}\nfragColor = mix( vec4(0.0), color, outlineAlpha );\nvar tex0 : vec4<f32> = textureSample(textureFront, samplerFront, input.fragUV );\nvar output : FragmentOutput;\noutput.color = mix(fragColor, tex0, tex0.a);\nreturn output;\n}",
+	blendsBackground: false,
+	usesDepth: false,
+	extendBoxHorizontal: 50,
+	extendBoxVertical: 50,
+	crossSampling: true,
+	mustPreDraw: true,
+	preservesOpaqueness: false,
+	supports3dDirectRendering: false,
+	animated: false,
+	parameters: [["outlinecolor",0,"color"],["width",0,"float"],["precisionStep",0,"float"],["samples",0,"float"]]
+};
 
 }
 
@@ -1289,6 +1304,11 @@ const C3=self.C3,C3X=self.C3X,IBehaviorInstance=self.IBehaviorInstance,Ease=self
 // scripts/behaviors/bound/c3runtime/runtime.js
 {
 {const a=self.C3;a.Behaviors.bound=class extends a.SDKBehaviorBase{constructor(e){super(e)}Release(){super.Release()}}}{const d=self.C3;d.Behaviors.bound.Type=class extends d.SDKBehaviorTypeBase{constructor(e){super(e)}Release(){super.Release()}OnCreate(){}}}{const g=self.C3,h=0;g.Behaviors.bound.Instance=class extends g.SDKBehaviorInstanceBase{constructor(e,t){super(e),this._mode=0,t&&(this._mode=t[h]),this._StartTicking2()}Release(){super.Release()}SaveToJson(){return{"m":this._mode}}LoadFromJson(e){this._mode=e["m"]}Tick2(){const e=this._inst.GetWorldInfo(),t=e.GetBoundingBox(),s=e.GetLayout();let o=!1;0===this._mode?(e.GetX()<0&&(e.SetX(0),o=!0),e.GetY()<0&&(e.SetY(0),o=!0),e.GetX()>s.GetWidth()&&(e.SetX(s.GetWidth()),o=!0),e.GetY()>s.GetHeight()&&(e.SetY(s.GetHeight()),o=!0)):(t.getLeft()<0&&(e.OffsetX(-t.getLeft()),o=!0),t.getTop()<0&&(e.OffsetY(-t.getTop()),o=!0),t.getRight()>s.GetWidth()&&(e.OffsetX(-(t.getRight()-s.GetWidth())),o=!0),t.getBottom()>s.GetHeight()&&(e.OffsetY(-(t.getBottom()-s.GetHeight())),o=!0)),o&&e.SetBboxChanged()}GetPropertyValueByIndex(e){if(e===h)return this._mode}SetPropertyValueByIndex(e,t){e===h&&(this._mode=t)}}}{const t=self.C3;t.Behaviors.bound.Cnds={}}{const u=self.C3;u.Behaviors.bound.Acts={}}{const v=self.C3;v.Behaviors.bound.Exps={}}
+}
+
+// scripts/behaviors/Pin/c3runtime/runtime.js
+{
+{const a=self.C3;a.Behaviors.Pin=class extends a.SDKBehaviorBase{constructor(t){super(t)}Release(){super.Release()}}}{const d=self.C3;d.Behaviors.Pin.Type=class extends d.SDKBehaviorTypeBase{constructor(t){super(t)}Release(){super.Release()}OnCreate(){}}}{const g=self.C3;g.Behaviors.Pin.Instance=class extends g.SDKBehaviorInstanceBase{constructor(t,s){super(t),this._pinInst=null,this._pinUid=-1,this._mode="",this._propSet=new Set,this._pinDist=0,this._pinAngle=0,this._pinImagePoint=0,this._dx=0,this._dy=0,this._dWidth=0,this._dHeight=0,this._dAngle=0,this._dz=0,this._lastKnownAngle=0,this._destroy=!1,s&&(this._destroy=s[0]);const e=this._runtime.Dispatcher();this._disposables=new g.CompositeDisposable(g.Disposable.From(e,"instancedestroy",t=>this._OnInstanceDestroyed(t.instance)),g.Disposable.From(e,"afterload",t=>this._OnAfterLoad()))}Release(){this._pinInst=null,super.Release()}_SetPinInst(t){t?(this._pinInst=t,this._StartTicking2()):(this._pinInst=null,this._StopTicking2())}_Pin(t,s,e){if(t){const i=t.GetFirstPicked(this._inst);if(i){this._mode=s,this._SetPinInst(i);const h=this._inst.GetWorldInfo(),n=i.GetWorldInfo();if("properties"===this._mode){const a=this._propSet;a.clear();for(const o of e)a.add(o);this._dx=h.GetX()-n.GetX(),this._dy=h.GetY()-n.GetY(),this._dAngle=h.GetAngle()-n.GetAngle(),this._lastKnownAngle=h.GetAngle(),this._dz=h.GetZElevation()-n.GetZElevation(),a.has("x")&&a.has("y")&&(this._pinAngle=g.angleTo(n.GetX(),n.GetY(),h.GetX(),h.GetY())-n.GetAngle(),this._pinDist=g.distanceTo(n.GetX(),n.GetY(),h.GetX(),h.GetY())),a.has("width-abs")?this._dWidth=h.GetWidth()-n.GetWidth():a.has("width-scale")&&(this._dWidth=h.GetWidth()/n.GetWidth()),a.has("height-abs")?this._dHeight=h.GetHeight()-n.GetHeight():a.has("height-scale")&&(this._dHeight=h.GetHeight()/n.GetHeight())}else this._pinDist=g.distanceTo(n.GetX(),n.GetY(),h.GetX(),h.GetY())}}}SaveToJson(){const t=this._propSet,s=this._mode,e={"uid":this._pinInst&&!this._pinInst.IsDestroyed()?this._pinInst.GetUID():-1,"m":s,"d":this._destroy};return"rope"===s||"bar"===s?e["pd"]=this._pinDist:"properties"===s&&(e["ps"]=[...this._propSet],t.has("imagepoint")?e["ip"]=this._pinImagePoint:t.has("x")&&t.has("y")?(e["pa"]=this._pinAngle,e["pd"]=this._pinDist):(t.has("x")&&(e["dx"]=this._dx),t.has("y")&&(e["dy"]=this._dy)),t.has("angle")&&(e["da"]=this._dAngle,e["lka"]=this._lastKnownAngle),(t.has("width-abs")||t.has("width-scale"))&&(e["dw"]=this._dWidth),(t.has("height-abs")||t.has("height-scale"))&&(e["dh"]=this._dHeight),t.has("z"))&&(e["dz"]=this._dz),e}LoadFromJson(t){const s=t["m"],e=this._propSet;if(e.clear(),this._pinUid=t["uid"],"number"==typeof s)this._LoadFromJson_Legacy(t);else if(this._mode=s,t.hasOwnProperty("d")&&(this._destroy=!!t["d"]),"rope"===s||"bar"===s)this._pinDist=t["pd"];else if("properties"===s){for(const i of t["ps"])e.add(i);e.has("imagepoint")?this._pinImagePoint=t["ip"]:e.has("x")&&e.has("y")?(this._pinAngle=t["pa"],this._pinDist=t["pd"]):(e.has("x")&&(this._dx=t["dx"]),e.has("y")&&(this._dy=t["dy"])),e.has("angle")&&(this._dAngle=t["da"],this._lastKnownAngle=t["lka"]||0),(e.has("width-abs")||e.has("width-scale"))&&(this._dWidth=t["dw"]),(e.has("height-abs")||e.has("height-scale"))&&(this._dHeight=t["dh"]),e.has("z")&&(this._dz=t["dz"])}}_LoadFromJson_Legacy(t){const s=this._propSet,e=t["msa"],i=t["tsa"],h=t["pa"],n=t["pd"],a=t["m"];switch(a){case 0:this._mode="properties",s.add("x").add("y").add("angle"),this._pinAngle=h,this._pinDist=n,this._dAngle=e-i,this._lastKnownAngle=t["lka"];break;case 1:this._mode="properties",s.add("x").add("y"),this._pinAngle=h,this._pinDist=n;break;case 2:this._mode="properties",s.add("angle"),this._dAngle=e-i,this._lastKnownAngle=t["lka"];break;case 3:this._mode="rope",this._pinDist=t["pd"];break;case 4:this._mode="bar",this._pinDist=t["pd"]}}_OnAfterLoad(){-1===this._pinUid?this._SetPinInst(null):(this._SetPinInst(this._runtime.GetInstanceByUID(this._pinUid)),this._pinUid=-1)}_OnInstanceDestroyed(t){this._pinInst===t&&(this._SetPinInst(null),this._destroy)&&this._runtime.DestroyInstance(this._inst)}Tick2(){const e=this._pinInst;if(e&&!e.IsDestroyed()){const i=e.GetWorldInfo(),t=this._inst,h=t.GetWorldInfo(),n=this._mode;let s=!1;if("rope"===n||"bar"===n){const a=g.distanceTo(h.GetX(),h.GetY(),i.GetX(),i.GetY());if(a>this._pinDist||"bar"===n&&a<this._pinDist){const o=g.angleTo(i.GetX(),i.GetY(),h.GetX(),h.GetY());h.SetXY(i.GetX()+Math.cos(o)*this._pinDist,i.GetY()+Math.sin(o)*this._pinDist),s=!0}}else{const d=this._propSet;let t=0;if(d.has("imagepoint")){const[_,p]=e.GetImagePoint(this._pinImagePoint);h.EqualsXY(_,p)||(h.SetXY(_,p),s=!0)}else if(d.has("x")&&d.has("y")){const l=i.GetX()+Math.cos(i.GetAngle()+this._pinAngle)*this._pinDist,r=i.GetY()+Math.sin(i.GetAngle()+this._pinAngle)*this._pinDist;h.EqualsXY(l,r)||(h.SetXY(l,r),s=!0)}else t=i.GetX()+this._dx,d.has("x")&&t!==h.GetX()&&(h.SetX(t),s=!0),t=i.GetY()+this._dy,d.has("y")&&t!==h.GetY()&&(h.SetY(t),s=!0);d.has("angle")&&(this._lastKnownAngle!==h.GetAngle()&&(this._dAngle=g.clampAngle(this._dAngle+(h.GetAngle()-this._lastKnownAngle))),(t=g.clampAngle(i.GetAngle()+this._dAngle))!==h.GetAngle()&&(h.SetAngle(t),s=!0),this._lastKnownAngle=h.GetAngle()),d.has("width-abs")&&(t=i.GetWidth()+this._dWidth)!==h.GetWidth()&&(h.SetWidth(t),s=!0),d.has("width-scale")&&(t=i.GetWidth()*this._dWidth)!==h.GetWidth()&&(h.SetWidth(t),s=!0),d.has("height-abs")&&(t=i.GetHeight()+this._dHeight)!==h.GetHeight()&&(h.SetHeight(t),s=!0),d.has("height-scale")&&(t=i.GetHeight()*this._dHeight)!==h.GetHeight()&&(h.SetHeight(t),s=!0),d.has("z")&&(t=i.GetZElevation()+this._dz)!==h.GetZElevation()&&(h.SetZElevation(t),this._runtime.UpdateRender())}s&&h.SetBboxChanged()}}GetDebuggerProperties(){const t="behaviors.pin.debugger";return[{title:"$"+this.GetBehaviorType().GetName(),properties:[{name:t+".is-pinned",value:!!this._pinInst},{name:t+".pinned-uid",value:this._pinInst?this._pinInst.GetUID():0}]}]}}}{const $=self.C3;$.Behaviors.Pin.Cnds={IsPinned(){return!!this._pinInst},WillDestroy(){return this._destroy}}}{const _=self.C3;_.Behaviors.Pin.Acts={PinByDistance(t,s){this._Pin(t,0===s?"rope":"bar")},PinByProperties(t,s,e,i,h,n,a){const o=[];s&&o.push("x"),e&&o.push("y"),i&&o.push("angle"),a&&o.push("z"),1===h?o.push("width-abs"):2===h&&o.push("width-scale"),1===n?o.push("height-abs"):2===n&&o.push("height-scale"),0!==o.length&&this._Pin(t,"properties",o)},PinByImagePoint(t,s,e,i,h,n){const a=["imagepoint"];e&&a.push("angle"),n&&a.push("z"),1===i?a.push("width-abs"):2===i&&a.push("width-scale"),1===h?a.push("height-abs"):2===h&&a.push("height-scale"),this._pinImagePoint=s,this._Pin(t,"properties",a)},SetPinDistance(t){"rope"!==this._mode&&"bar"!==this._mode||(this._pinDist=Math.max(t,0))},SetDestroy(t){this._destroy=t},Unpin(){this._SetPinInst(null),this._mode="",this._propSet.clear(),this._pinImagePoint=""},Pin(t,s){switch(s){case 0:this._Pin(t,"properties",["x","y","angle"]);break;case 1:this._Pin(t,"properties",["x","y"]);break;case 2:this._Pin(t,"properties",["angle"]);break;case 3:this._Pin(t,"rope");break;case 4:this._Pin(t,"bar")}}}}{const va=self.C3;va.Behaviors.Pin.Exps={PinnedUID(){return this._pinInst?this._pinInst.GetUID():-1}}}
 }
 
 // scripts/expTable.js
@@ -1444,16 +1464,42 @@ self.C3_ExpressionFuncs = [
 			const f0 = p._GetNode(0).GetBoundMethod();
 			return () => (f0(0) * 100);
 		},
+		() => 808.372039,
+		() => 903.84397,
+		() => 684.101333,
+		() => 940.641964,
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
 			return () => ((-f0(0)) * 100);
 		},
+		() => 269.95663,
+		() => 148.404413,
+		() => 398.79321543121205,
 		p => {
 			const n0 = p._GetNode(0);
 			return () => (n0.ExpInstVar_Family() * 1.3);
 		},
 		() => "Invisible Elements Drag",
-		() => "Tea",
+		() => "Drink",
+		() => "T_Drink_Coffee_Empty_Cup",
+		() => "VasoDeVidrio",
+		() => "Dish",
+		() => "Food",
+		() => "Snack",
+		() => "Bandeja",
+		() => "BANDEJA 1",
+		() => "Bandeja2",
+		p => {
+			const n0 = p._GetNode(0);
+			return () => n0.ExpInstVar();
+		},
+		() => "Horno",
+		() => "T_Desert_Croissant",
+		() => "T_Desert_Muffin",
+		p => {
+			const n0 = p._GetNode(0);
+			return () => n0.ExpObject(0);
+		},
 		p => {
 			const n0 = p._GetNode(0);
 			const n1 = p._GetNode(1);
@@ -1463,10 +1509,22 @@ self.C3_ExpressionFuncs = [
 			const n0 = p._GetNode(0);
 			return () => n0.ExpObject();
 		},
+		() => "Juice",
+		() => "Cups",
+		() => "Left Coffee",
 		p => {
 			const n0 = p._GetNode(0);
-			return () => n0.ExpInstVar();
-		}
+			return () => n0.ExpObject(1);
+		},
+		() => "Right Coffee",
+		() => "Tea",
+		() => "Licuadora",
+		p => {
+			const n0 = p._GetNode(0);
+			const n1 = p._GetNode(1);
+			return () => (n0.ExpInstVar() + n1.ExpInstVar_Family());
+		},
+		() => "Lavamanos"
 ];
 
 
