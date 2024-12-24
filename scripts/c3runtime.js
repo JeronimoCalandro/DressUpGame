@@ -1524,7 +1524,24 @@ self.C3_ExpressionFuncs = [
 			const n1 = p._GetNode(1);
 			return () => (n0.ExpInstVar() + n1.ExpInstVar_Family());
 		},
-		() => "Lavamanos"
+		() => "Lavamanos",
+		() => "Funciones",
+		p => {
+			const v0 = p._GetNode(0).GetVar();
+			const v1 = p._GetNode(1).GetVar();
+			return () => ((v0.GetValue() / v1.GetValue()) * 50);
+		},
+		p => {
+			const n0 = p._GetNode(0);
+			return () => (n0.ExpObject() * 0.95);
+		},
+		() => 624.892228,
+		() => 229.071031,
+		() => 62.882342,
+		() => 427.602908,
+		() => "T_Prop_Plate_Small",
+		() => 1031.426879,
+		() => 528.247905
 ];
 
 
