@@ -1451,6 +1451,7 @@ self.C3_ExpressionFuncs = [
 		() => 270,
 		() => 428,
 		() => 1000,
+		() => "UI",
 		() => "Camera Scrolling",
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
@@ -1486,7 +1487,17 @@ self.C3_ExpressionFuncs = [
 		() => "VasoDeVidrio",
 		() => "Dish",
 		() => "Food",
+		() => "DonaBlanca",
+		() => "T_Desert_Donut_",
+		() => "T_Desert_Donut_2",
+		() => "T_Desert_Cheesecake_Slice",
+		() => "T_Desert_Croissant",
+		() => "T_Desert_Muffin",
 		() => "Snack",
+		() => "T_Desert_Cookie_2",
+		() => "T_Desert_Cookie_",
+		() => "GalletitaRoja",
+		() => "T_Desert_Chocolate_Ball_",
 		() => "BetterOutline",
 		() => "Bandeja",
 		() => "BANDEJA 1",
@@ -1495,9 +1506,9 @@ self.C3_ExpressionFuncs = [
 			const n0 = p._GetNode(0);
 			return () => n0.ExpInstVar();
 		},
+		() => 10000000000,
+		() => "BANDEJA2",
 		() => "Horno",
-		() => "T_Desert_Croissant",
-		() => "T_Desert_Muffin",
 		p => {
 			const n0 = p._GetNode(0);
 			return () => n0.ExpObject(0);
@@ -1549,6 +1560,7 @@ self.C3_ExpressionFuncs = [
 			const f0 = p._GetNode(0).GetBoundMethod();
 			return () => Math.floor(f0(0, 4));
 		},
+		() => 40,
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
 			return () => Math.floor(f0(1, 7));
@@ -1557,6 +1569,7 @@ self.C3_ExpressionFuncs = [
 			const f0 = p._GetNode(0).GetBoundMethod();
 			return () => Math.floor(f0(0, 6));
 		},
+		() => 30,
 		() => "Pedido2",
 		() => 859.406757,
 		() => "Bebida",
@@ -1578,7 +1591,12 @@ self.C3_ExpressionFuncs = [
 		},
 		() => -2,
 		() => -3,
-		() => "UI"
+		() => "1",
+		p => {
+			const n0 = p._GetNode(0);
+			const n1 = p._GetNode(1);
+			return () => (50 - ((n0.ExpInstVar() / n1.ExpInstVar()) * 50));
+		}
 ];
 
 
