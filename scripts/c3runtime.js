@@ -1466,15 +1466,16 @@ self.C3_ExpressionFuncs = [
 		},
 		() => 808.372039,
 		() => 903.84397,
-		() => 684.101333,
 		() => 940.641964,
+		() => 684.101333,
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
 			return () => ((-f0(0)) * 100);
 		},
 		() => 269.95663,
-		() => 148.404413,
 		() => 398.79321543121205,
+		() => 141.12004456878796,
+		() => "Unique Elements",
 		p => {
 			const n0 = p._GetNode(0);
 			return () => (n0.ExpInstVar_Family() * 1.3);
@@ -1486,6 +1487,7 @@ self.C3_ExpressionFuncs = [
 		() => "Dish",
 		() => "Food",
 		() => "Snack",
+		() => "BetterOutline",
 		() => "Bandeja",
 		() => "BANDEJA 1",
 		() => "Bandeja2",
@@ -1541,7 +1543,42 @@ self.C3_ExpressionFuncs = [
 		() => 427.602908,
 		() => "T_Prop_Plate_Small",
 		() => 1031.426879,
-		() => 528.247905
+		() => 528.247905,
+		() => "Pedidos",
+		p => {
+			const f0 = p._GetNode(0).GetBoundMethod();
+			return () => Math.floor(f0(0, 4));
+		},
+		p => {
+			const f0 = p._GetNode(0).GetBoundMethod();
+			return () => Math.floor(f0(1, 7));
+		},
+		p => {
+			const f0 = p._GetNode(0).GetBoundMethod();
+			return () => Math.floor(f0(0, 6));
+		},
+		() => "Pedido2",
+		() => 859.406757,
+		() => "Bebida",
+		() => 828.298585,
+		p => {
+			const v0 = p._GetNode(0).GetVar();
+			return () => (v0.GetValue() - 25);
+		},
+		() => "Comida",
+		() => 879.93254,
+		p => {
+			const v0 = p._GetNode(0).GetVar();
+			return () => (v0.GetValue() - 30);
+		},
+		() => 895,
+		p => {
+			const v0 = p._GetNode(0).GetVar();
+			return () => (v0.GetValue() - 15);
+		},
+		() => -2,
+		() => -3,
+		() => "UI"
 ];
 
 

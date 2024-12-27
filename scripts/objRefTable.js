@@ -53,7 +53,11 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Sprite.Cnds.CompareInstanceVar,
 		C3.Behaviors.DragnDrop.Acts.SetEnabled,
 		C3.Plugins.System.Acts.CreateObjectByName,
+		C3.Behaviors.DragnDrop.Cnds.IsDragging,
+		C3.Plugins.Sprite.Acts.SetEffectEnabled,
 		C3.Behaviors.Pin.Acts.Unpin,
+		C3.Plugins.Sprite.Acts.MoveToLayer,
+		C3.Behaviors.Pin.Cnds.IsPinned,
 		C3.Plugins.Sprite.Acts.Destroy,
 		C3.Plugins.Sprite.Acts.SetPosToObject,
 		C3.Plugins.Sprite.Exps.ImagePointX,
@@ -62,7 +66,10 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Sprite.Acts.AddInstanceVar,
 		C3.Plugins.System.Exps.dt,
 		C3.Plugins.Sprite.Cnds.IsVisible,
-		C3.Plugins.Touch.Cnds.OnTapGestureObject
+		C3.Plugins.Touch.Cnds.OnTapGestureObject,
+		C3.Plugins.System.Cnds.Every,
+		C3.Plugins.System.Exps.random,
+		C3.Plugins.Sprite.Acts.SetZElevation
 	];
 };
 self.C3_JsPropNameTable = [
@@ -242,6 +249,12 @@ self.C3_JsPropNameTable = [
 	{PlatoSucio: 0},
 	{TazaSucia: 0},
 	{VasoDeVidrioSucio: 0},
+	{Pedido: 0},
+	{dificulty: 0},
+	{Pedido2: 0},
+	{Bebida: 0},
+	{Comida: 0},
+	{Snack: 0},
 	{Clothes: 0},
 	{Buttons: 0},
 	{Backgrounds: 0},
@@ -268,7 +281,13 @@ self.C3_JsPropNameTable = [
 	{yGlass: 0},
 	{platesName: 0},
 	{xPlates: 0},
-	{yPlates: 0}
+	{yPlates: 0},
+	{position1: 0},
+	{position2: 0},
+	{position3: 0},
+	{position1Used: 0},
+	{position1Used2: 0},
+	{position1Used3: 0}
 ];
 
 self.InstanceType = {
@@ -414,6 +433,11 @@ self.InstanceType = {
 	PlatoSucio: class extends self.ISpriteInstance {},
 	TazaSucia: class extends self.ISpriteInstance {},
 	VasoDeVidrioSucio: class extends self.ISpriteInstance {},
+	Pedido: class extends self.ISpriteInstance {},
+	Pedido2: class extends self.ISpriteInstance {},
+	Bebida: class extends self.ISpriteInstance {},
+	Comida: class extends self.ISpriteInstance {},
+	Snack: class extends self.ISpriteInstance {},
 	Clothes: class extends self.ISpriteInstance {},
 	Buttons: class extends self.ISpriteInstance {},
 	Backgrounds: class extends self.ISpriteInstance {},
