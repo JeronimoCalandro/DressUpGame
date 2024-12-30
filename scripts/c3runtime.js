@@ -1481,7 +1481,20 @@ self.C3_ExpressionFuncs = [
 			return () => v0.GetValue();
 		},
 		() => "TotalScore",
+		p => {
+			const v0 = p._GetNode(0).GetVar();
+			return () => ((v0.GetValue() / 3000) * 384.335086);
+		},
+		p => {
+			const n0 = p._GetNode(0);
+			return () => n0.ExpObject();
+		},
 		() => "BestScore",
+		() => 3000,
+		() => 384.335086,
+		() => 750,
+		() => 1500,
+		() => 2250,
 		p => {
 			const n0 = p._GetNode(0);
 			return () => (n0.ExpObject() * 1.3);
@@ -1494,6 +1507,7 @@ self.C3_ExpressionFuncs = [
 		() => "Toca la PAVA para calentar agua y luego servirla en la TAZA.",
 		() => "Serví los JUGOS en los VASOS. Algunos jugos necesitan mezclarse en la LICUADORA.",
 		() => "BEBIDAS",
+		() => "1",
 		() => "Comida.mp4",
 		() => "Horno.mp4",
 		() => "Snack.mp4",
@@ -1501,12 +1515,20 @@ self.C3_ExpressionFuncs = [
 		() => "Algunas COMIDAS deberán ser calentadas en el HORNO.",
 		() => "El pedido también podrá ir acompañado de un SNACK.",
 		() => "COMIDAS",
+		() => "2",
 		() => "Basura.mp4",
 		() => "Lavar.mp4",
 		() => "Si armaste mal un PEDIDO, lo podés tirar en el TACHO DE BASURA.",
 		() => "A medida que uses la VAJILLA, la vas a tener que LAVAR tocando la CANILLA.",
 		() => "EXTRAS",
 		() => "JUGAR",
+		() => "Memories",
+		() => 0.3,
+		() => "Primera juntada en familia. Alto IRL salió, estuvimos todo el día juntos y después la seguimos en el río.",
+		() => "Qué bien nos hizo vernos ahí. Fue muy loco y me di cuenta de que por vos todo, siempre. ¿Ahí me creíste que de verdad te amaba, HDP?",
+		() => "Unidos por una pasión jajajaja. Suena exagerado, pero no volví a disfrutar del helado. (Si ves esto, me tenés que invitar uno).",
+		() => "Buenas siestas clavábamos, con lo que te costaba dormir morías mal. Las echo de menos (como a vos).",
+		() => "No sé dónde estábamos, pero salimos lindos. Si lees esto, hacémelo saber para darte el premio. Espero que te haya gustado y sabe que sos lo mejor que me pasó. Te amo <3",
 		() => "Camera Scrolling",
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
@@ -1520,6 +1542,7 @@ self.C3_ExpressionFuncs = [
 		() => 903.84397,
 		() => 684.101333,
 		() => 940.641964,
+		() => -20,
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
 			return () => ((-f0(0)) * 100);
@@ -1575,10 +1598,6 @@ self.C3_ExpressionFuncs = [
 			const n0 = p._GetNode(0);
 			const n1 = p._GetNode(1);
 			return () => ((n0.ExpInstVar() / n1.ExpInstVar()) * 50);
-		},
-		p => {
-			const n0 = p._GetNode(0);
-			return () => n0.ExpObject();
 		},
 		() => "Juice",
 		() => "Juice Bandeja 1",
@@ -1638,15 +1657,11 @@ self.C3_ExpressionFuncs = [
 		() => 60,
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
-			return () => Math.floor(f0(1, 7));
+			return () => Math.floor(f0(4, 7));
 		},
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
 			return () => Math.floor(f0(0, 6));
-		},
-		p => {
-			const f0 = p._GetNode(0).GetBoundMethod();
-			return () => Math.floor(f0(0, 5));
 		},
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
@@ -1655,7 +1670,7 @@ self.C3_ExpressionFuncs = [
 		() => 50,
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
-			return () => Math.floor(f0(4, 10));
+			return () => Math.floor(f0(1, 10));
 		},
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
@@ -1700,13 +1715,11 @@ self.C3_ExpressionFuncs = [
 		},
 		() => -2,
 		() => -3,
-		() => "1",
 		p => {
 			const n0 = p._GetNode(0);
 			const n1 = p._GetNode(1);
 			return () => (50 - ((n0.ExpInstVar() / n1.ExpInstVar()) * 50));
 		},
-		() => "2",
 		() => "3"
 ];
 
